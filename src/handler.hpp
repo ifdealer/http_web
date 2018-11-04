@@ -46,7 +46,7 @@ void start_server(http_web::Http_Server& server) {
 		ifs.open(filename, ifstream::in);
 
 		if (ifs) {
-			ifs.seekg(0, ios::end);  //定位到输入流结尾
+			ifs.seekg(0, ios::end);  //定位到输入流结尾 
 			size_t length = ifs.tellg();  //定位到结尾后可以获取总大小
 			ifs.seekg(0, ios::beg);  //重定位回到开头
 			// 文件内容拷贝到 response-stream 中，不应该用于大型文件
