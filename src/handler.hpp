@@ -14,30 +14,30 @@ void start_server(http_web::Http_Server& server) {
 			content_stream << header.first << ": " << header.second << "<br>";
 		}
 
-		// »ñµÃ content_stream µÄ³¤¶È(Ê¹ÓÃ content.tellp() »ñµÃ)
+		// è·å¾— content_stream çš„é•¿åº¦(ä½¿ç”¨ content.tellp() è·å¾—)
 		content_stream.seekp(0, ios::end);
 
 		response << "HTTP/1.1 200 OK\r\nContent-Length: " << content_stream.tellp() << "\r\n\r\n" << content_stream.rdbuf();
 	};
 
-	//Ä¬ÈÏ´ò¿ªµÄÎÄ¼ş
+	//é»˜è®¤æ‰“å¼€çš„æ–‡ä»¶
 	server.default_resource["^/?(.*)$"]["GET"] = [](ostream& response, Request& request) {
 		string filename = "www/";
 
 		string path = request.path_match[1];
 
-		// ·ÀÖ¹Ê¹ÓÃ `..` À´·ÃÎÊ web/ Ä¿Â¼ÍâµÄÄÚÈİ
-		size_t last_pos = path.rfind(".");  //²éÕÒ×îºóÒ»¸ö"."³öÏÖµÄÎ»ÖÃ
+		// é˜²æ­¢ä½¿ç”¨ `..` æ¥è®¿é—® web/ ç›®å½•å¤–çš„å†…å®¹
+		size_t last_pos = path.rfind(".");  //æŸ¥æ‰¾æœ€åä¸€ä¸ª"."å‡ºç°çš„ä½ç½®
 		size_t current_pos = 0;
 		size_t pos;
-		while ((pos = path.find('.', current_pos)) != string::npos && pos != last_pos) {  //nposÎª×Ö·û´®½áÎ²
-			current_pos = pos;//Ã¿´ÎËÑË÷Ç°½øÒ»´Î£¬findº¯ÊıÖ»ËÑË÷curren_posÖ®ºóµÄ×Ö·û
-			path.erase(pos, 1); //ÕÒµ½"."²¢É¾³ı
+		while ((pos = path.find('.', current_pos)) != string::npos && pos != last_pos) {  //nposä¸ºå­—ç¬¦ä¸²ç»“å°¾
+			current_pos = pos;//æ¯æ¬¡æœç´¢å‰è¿›ä¸€æ¬¡ï¼Œfindå‡½æ•°åªæœç´¢curren_posä¹‹åçš„å­—ç¬¦
+			path.erase(pos, 1); //æ‰¾åˆ°"."å¹¶åˆ é™¤
 			last_pos--;
 		}
 
 		ifstream ifs;
-		// ¼òµ¥µÄÆ½Ì¨ÎŞ¹ØµÄÎÄ¼ş»òÄ¿Â¼¼ì²é
+		// ç®€å•çš„å¹³å°æ— å…³çš„æ–‡ä»¶æˆ–ç›®å½•æ£€æŸ¥
 		if (filename.find('.') == string::npos) {
 			if (filename[filename.length() - 1] != '/')
 				filename += '/';
@@ -46,20 +46,20 @@ void start_server(http_web::Http_Server& server) {
 		ifs.open(filename, ifstream::in);
 
 		if (ifs) {
-			ifs.seekg(0, ios::end);  //¶¨Î»µ½ÊäÈëÁ÷½áÎ²
-			size_t length = ifs.tellg();  //¶¨Î»µ½½áÎ²ºó¿ÉÒÔ»ñÈ¡×Ü´óĞ¡
-			ifs.seekg(0, ios::beg);  //ÖØ¶¨Î»»Øµ½¿ªÍ·
-			// ÎÄ¼şÄÚÈİ¿½±´µ½ response-stream ÖĞ£¬²»Ó¦¸ÃÓÃÓÚ´óĞÍÎÄ¼ş
+			ifs.seekg(0, ios::end);  //å®šä½åˆ°è¾“å…¥æµç»“å°¾
+			size_t length = ifs.tellg();  //å®šä½åˆ°ç»“å°¾åå¯ä»¥è·å–æ€»å¤§å°
+			ifs.seekg(0, ios::beg);  //é‡å®šä½å›åˆ°å¼€å¤´
+			// æ–‡ä»¶å†…å®¹æ‹·è´åˆ° response-stream ä¸­ï¼Œä¸åº”è¯¥ç”¨äºå¤§å‹æ–‡ä»¶
 			response << "HTTP/1.1 200 OK\r\nContent-Length: " << length << "\r\n\r\n" << ifs.rdbuf();
 
 			ifs.close();
 		}
 		else {
-			// ÎÄ¼ş²»´æÔÚÊ±£¬·µ»ØÎŞ·¨´ò¿ªÎÄ¼ş
+			// æ–‡ä»¶ä¸å­˜åœ¨æ—¶ï¼Œè¿”å›æ— æ³•æ‰“å¼€æ–‡ä»¶
 			string content = "Could not open file " + filename;
 			response << "HTTP/1.1 400 Bad Request\r\nContent-Length: " << content.length() << "\r\n\r\n" << content;
 		}
 	};
 
 	server.start();
-}
+} 
